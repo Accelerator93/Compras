@@ -2,7 +2,7 @@
     "short_name": "Shop",
     "name":"Abarrotes",
     "start_url":"index.html",
-    "background_color":"grey",
+    "background_color":"lightgreen",
     "display":"standalone",
     "orientation": "portrait",
     "theme_color":"black",

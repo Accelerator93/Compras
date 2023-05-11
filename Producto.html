@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Producto agregado</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container mt-3">
+        <h3>Producto agregado</h3>
+        <form>
+            <div class="form-group">
+                <label>Nombre:</label>
+                <span id="nombreProducto"></span>
+            </div>
+            <div class="form-group">
+                <label>Cantidad:</label>
+                <span id="cantidad"></span>
+            </div>
+            <div class="form-group">
+                <label>Precio:</label>
+                <span id="precio"></span>
+            </div>
+            <div class="form-group">
+                <label>Categoría:</label>
+                <span id="categoria"></span>
+            </div>
+            <div class="form-group">
+                <label>Nota:</label>
+                <span id="nota"></span>
+            </div>
+        </form>
+    </div>
+    <script>
+        // obtener los parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // obtener los valores de los parámetros
+        const nombre = urlParams.get('nombre');
+        const cantidad = urlParams.get('cantidad');
+        const precio = urlParams.get('precio');
+        const categoria = urlParams.get('categoria');
+        const nota = urlParams.get('nota');
+
+        // mostrar los valores en el formulario
+        document.getElementById("nombreProducto").innerHTML = nombre;
+        document.getElementById("cantidad").innerHTML = cantidad;
+        document.getElementById("precio").innerHTML = precio;
+        document.getElementById("categoria").innerHTML = categoria;
+        document.getElementById("nota").innerHTML = nota;
+    </script>
+</body>
+</html>

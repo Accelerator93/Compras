@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Softlist</title>
+</head>
+<style>body {
+	font-family: Arial, sans-serif;
+}
+
+form {
+	margin-bottom: 20px;
+}
+
+label {
+	display: block;
+	margin-bottom: 5px;
+}
+
+input[type="text"] {
+	padding: 5px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+}
+
+button {
+	padding: 5px 10px;
+	background-color: #007bff;
+	color: #fff;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: #0069d9;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+li {
+	margin-bottom: 5px;
+}
+</style>
+<body>
+    <form>
+        <label for="categoria">Categoría:</label>
+        <input type="text" id="categoria" name="categoria">
+        <button type="button" onclick="agregarCategoria()">Agregar</button>
+    </form>
+    <ul id="lista-categorias">
+        <li>Abarrotes</li>
+        <li>Lácteos</li>
+    </ul>
+        
+</body>
+<script>
+    function agregarCategoria() {
+	var categoria = document.getElementById("categoria").value;
+	var listaCategorias = document.getElementById("lista-categorias");
+	var nuevaCategoria = document.createElement("li");
+	nuevaCategoria.textContent = categoria;
+	listaCategorias.appendChild(nuevaCategoria);
+}
+
+</script>
+</html>

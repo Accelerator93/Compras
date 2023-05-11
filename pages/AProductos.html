@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<link type="image/png" sizes="16x16" rel="icon" href="../icons8-lista-de-verificación-16.png">
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.2.2/dist/pouchdb.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Agregar producto</title>
+  </head>
+  <style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+h1 {
+  text-align: center;
+  margin: 20px 0;
+  color: #28b951;
+}
+
+form {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+input, select, textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #555;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+select {
+  color: #555;
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #28b951;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #28b951;
+}
+
+button[id="agregarCategoria"] {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #28b951;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[id="agregarCategoria"]:hover {
+  background-color: #28b951;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+li:hover {
+  background-color: #f5f5f5;
+}
+
+li img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+li h2 {
+  margin: 0;
+  color: #007bff;
+}
+
+li p {
+  margin: 0;
+  color: #555;
+}
+
+li .category {
+  color: #999;
+  font-style: italic;
+}
+.image-container {
+  display: flex;
+  align-items: center;
+}
+
+.image-preview {
+  max-width: 200px;
+  height: auto;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.image-preview img {
+  max-width: 100%;
+  height: auto;
+}
+  </style>
+  <body>
+    <h1>Nuevo producto</h1>
+    <form>
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" name="nombre">
+
+      <label for="cantidad">Cantidad:</label>
+      <input type="number" id="cantidad" name="cantidad">
+
+      <label for="precio">Precio:</label>
+      <input type="number" id="precio" name="precio">
+
+      <label for="categoria">Categoría:</label>
+      <select id="categoria" name="categoria">
+        <option value="default1">Abarrotes</option>
+        <option value="default2">Hogar</option>
+        <option value="default3">Electronicas</option>
+      </select>
+      <label for="nuevaCategoria">Nueva Categoría:</label>
+      <input type="text" id="nuevaCategoria" name="nuevaCategoria">
+      <button id="agregarCategoria" type="button">Agregar</button>
+
+      <label for="nota">Nota:</label>
+      <textarea id="nota" name="nota"></textarea>
+
+      <label for="imagen">Fotografía:</label>
+      <div class="image-container">
+        <div class="image-preview">
+          <img id="imagen-preview" src="../img/Imagen1.jpg" alt="Vista previa de la imagen">
+        </div>
+        <input type="file" id="imagen" name="imagen" style="display: inline-block;">
+      </div>
+      <button type="submit" onclick="agregarProducto()">Agregar producto</button>
+
+      <!-- <button id="agregarProducto" type="button">Agregar producto</button> -->
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.2.2/dist/pouchdb.min.js"></script>
+    <script>
+    //   const db = new PouchDB('productos');
+
+    //   const agregarProducto = async () => {
+    //     // Obtener valores del formulario
+    //     const nombre = document.getElementById('nombre').value;
+    //     const cantidad = document.getElementById('cantidad').value;
+    //     const precio = document.getElementById('precio').value;
+    //     const categoria = document.getElementById('categoria').value;
+    //     const nuevaCategoria = document.getElementById('nuevaCategoria').value;
+    //     const nota = document.getElementById('nota').value;
+    //     const imagen = document.getElementById('imagen').files[0];
+
+    //     // Validar campos obligatorios
+    //     if (!nombre || !cantidad || !precio) {
+    //       alert('Los campos nombre, cantidad y precio son obligatorios');
+    //       return;
+    //     }
+
+    //     // Crear objeto producto
+    //     const producto = {
+    //       nombre,
+    //       cantidad,
+    //       precio,
+    //       categoria,
+    //       nuevaCategoria,
+    //       nota
+    //     };
+
+    //     // Guardar objeto producto en la base de datos
+    //     const response = await db.post(producto);
+
+    //     // Subir imagen a Cloudinary
+    //     if (imagen) {
+    //       const formData = new FormData();
+    //       formData.append('file', imagen);
+    //       formData.append('upload_preset', 'tu_upload_preset_de_cloudinary');
+
+    //       const cloudinaryResponse = await fetch('https://api.cloudinary.com/v1_1/tu_cloud_name/image/upload', {
+    //         method: 'POST',
+    //         body: formData
+    //       });
+
+    //       const cloudinaryData = await cloudinaryResponse.json();
+    //       producto.imagen = cloudinaryData.secure_url;
+
+    //       // Actualizar objeto producto en la base de datos
+    //       await db.put({
+    //         _id: response.id,
+    //         _rev: response.rev,
+    //         ...producto
+    //       });
+    //     }
+
+    //     // Redirigir a la página de productos
+    //     window.location.href = 'productos.html';
+    //   };
+
+    //   document.getElementById('agregarProducto').addEventListener('click', agregarProducto);
+
+
+      function agregarProducto() {
+  // Crea un objeto con los datos del producto
+  const producto = {
+    nombre: document.getElementById('nombre').value,
+    cantidad: document.getElementById('cantidad').value,
+    precio: document.getElementById('precio').value,
+    categoria: document.getElementById('categoria').value,
+    nota: document.getElementById('nota').value,
+    imagen: document.getElementById('imagen-preview').src
+  };
+  
+  // Recupera los productos almacenados en el almacenamiento local
+  let productos = JSON.parse(localStorage.getItem('productos')) || [];
+  
+  // Agrega el nuevo producto a la lista de productos
+  productos.push(producto);
+  
+  // Almacena los productos actualizados en el almacenamiento local
+  localStorage.setItem('productos', JSON.stringify(productos));
+  
+  // Redirige al usuario a la página de productos
+  window.location.href = 'productos.html';
+}
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agregar Lista</title>
+  <link type="image/png" sizes="16x16" rel="icon" href="../icons8-lista-de-verificación-16.png">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="#">Tiendita</a>
+    </nav>
+
+    <div class="container mt-3">
+        <h3>Agregar nueva lista</h3>
+        <form id="formAgregarLista">
+          <div class="form-group">
+            <label for="nombreLista">Nombre de la lista:</label>
+            <input type="text" class="form-control" id="nombreLista" name="nombreLista" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+
+    <script src="../js/pouchdb-8.0.1.min.js"></script>
+    <script src="../js/base.js"></script>
+    <script>
+        // crear la base de datos
+        var db = new PouchDB('listas');
+      
+        // agregar nueva lista
+        $('#formAgregarLista').submit(function(e){
+          e.preventDefault();
+          var nombreLista = $('#nombreLista').val();
+          var productosLista = $('#productosLista').val().split('\n');
+          var lista = {
+              _id: new Date().toISOString(),
+              nombre: nombreLista,
+              productos: productosLista
+          };
+          db.put(lista, function callback(err, result) {
+              if (!err) {
+                  console.log('Se agregó la lista: ' + nombreLista);
+                  $('#nombreLista').val(''); // limpiar el campo del formulario
+                  $('#productosLista').val(''); // limpiar el campo del formulario
+                  window.location.href = "../PaginaInicial.html"; // redirigir al usuario a la página de listas
+              }
+          });
+        });
+      </script>
+      
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listas</title>
+  <link rel="icon" href="img/icono.ico"> 
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+  body{
+    background-color: lightgreen;
+  }
+  li img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+.image-preview {
+    text-align: center;
+  }
+
+  .image-preview img {
+    max-width: 100%;
+  }
+</style>
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="#">Abarrotes</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Listas
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="listas">
+                <a class="dropdown-item" href="pages/agregarLista.html">Agregar nueva lista</a>
+              </div>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+
+
+    <!--Agregar categoria-->
+      <div class="container mt-3">
+        <h3>Agregar nueva categoría</h3>
+        <form id="formAgregarCategoria">
+          <div class="form-group">
+            <label for="nombreCategoria">Nombre:</label>
+            <input type="text" class="form-control" id="nombreCategoria" name="nombreCategoria" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+      </div>
+      
+      <!--  -->
+      <div class="container mt-3">
+        <h3>Agregar Producto</h3>
+        <form id="agregarProducto">
+            <div class="form-group">
+                <label for="nombreProducto">Nombre:</label>
+                <input type="text" id="nombreProducto" class="form-control" placeholder="Ingresa el nombre del producto">
+            </div>
+            <div class="form-group">
+                <label for="precio">Precio:</label>
+                <input type="number" id="precio" class="form-control" placeholder="Precio">
+            </div>
+            <div class="form-group">
+                <label for="selectCategorias">Seleccionar categoría:</label>
+                <select class="form-control" id="selectCategorias" name="selectCategorias">
+                    <option value="">Sin Categoria</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="nota">Nota:</label>
+                <input type="text" id="nota" class="form-control" placeholder="Nota">
+            </div>
+            <!-- <div class="form-group">
+              <div class="image-preview">
+                <img id="imagen-preview" src="img/Imagen1.jpg" alt="Vista previa de la imagen">
+              </div>
+              <label for="imagen">Imagen:</label>
+              <input type="file" class="form-control-file" id="imagen" name="imagen">
+            </div> -->
+            <div class="form-group">
+            <div class="image-container">
+              <div id="imgs" class="image-preview">
+                <img id="imagen-preview" src="img/Imagen1.jpg" alt="Vista previa de la imagen" width="10%">
+              </div>
+              <input type="file" id="imagen" name="imagen" style="display: inline-block;">
+            </div>
+          </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+    <div id="productos"></div>
+
+<script src="js/pouchdb-8.0.1.min.js"></script>
+<script src="js/base.js"></script>
+<script>
+    // crear la base de datos
+var db = new PouchDB('categorias');
+
+// agregar nueva categoria
+$('#formAgregarCategoria').submit(function(e){
+    e.preventDefault();
+    var nombreCategoria = $('#nombreCategoria').val();
+    var categoria = {
+        _id: new Date().toISOString(),
+        nombre: nombreCategoria
+    };
+    db.put(categoria, function callback(err, result) {
+        if (!err) {
+            console.log('Se agregó la categoría: ' + nombreCategoria);
+            $('#nombreCategoria').val(''); // limpiar el campo del formulario
+            actualizarSelectCategorias(); // actualizar el select con las categorías ingresadas
+        }
+    });
+});
+
+// actualizar select con categorias ingresadas
+function actualizarSelectCategorias() {
+    db.allDocs({include_docs: true, descending: true}, function(err, doc) {
+        if (!err) {
+            var selectCategorias = document.getElementById("selectCategorias");
+            // vaciar opciones anteriores
+            while (selectCategorias.firstChild) {
+                selectCategorias.removeChild(selectCategorias.firstChild);
+            }
+            // agregar las opciones desde la base de datos
+            for (var i = 0; i < doc.rows.length; i++) {
+                var option = document.createElement("option");
+                option.text = doc.rows[i].doc.nombre;
+                option.value = doc.rows[i].doc._id;
+                selectCategorias.add(option);
+            }
+        }
+    });
+}
+
+// actualizar el select al cargar la página
+actualizarSelectCategorias();
+
+
+async function mostrarProductos() {
+  try {
+    // Obtener todos los documentos de PouchDB
+    const response = await db.allDocs({ include_docs: true });
+
+    // Crear una tabla para mostrar los productos
+    const productosTable = document.createElement('table');
+    productosTable.classList.add('table');
+
+    // Crear la cabecera de la tabla
+    const cabecera = document.createElement('thead');
+    const cabeceraFila = document.createElement('tr');
+    const cabeceraNombre = document.createElement('th');
+    const cabeceraPrecio = document.createElement('th');
+    // const cabeceraCantidad = document.createElement('th');
+    const cabeceraCategoria = document.createElement('th');
+    cabeceraNombre.textContent = 'Nombre';
+    cabeceraPrecio.textContent = 'Precio';
+    // cabeceraCantidad.textContent = 'Cantidad';
+    cabeceraCategoria.textContent = 'Categoría';
+    cabeceraFila.appendChild(cabeceraNombre);
+    cabeceraFila.appendChild(cabeceraPrecio);
+    // cabeceraFila.appendChild(cabeceraCantidad);
+    cabeceraFila.appendChild(cabeceraCategoria);
+    cabecera.appendChild(cabeceraFila);
+    productosTable.appendChild(cabecera);
+
+    // Crear el cuerpo de la tabla
+    const cuerpo = document.createElement('tbody');
+    response.rows.forEach((row) => {
+      const producto = row.doc;
+      const fila = document.createElement('tr');
+      const nombre = document.createElement('td');
+      const precio = document.createElement('td');
+      // const cantidad = document.createElement('td');
+      const categoria = document.createElement('td');
+      nombre.textContent = producto.nombre;
+      precio.textContent = producto.precio;
+      // cantidad.textContent = producto.cantidad;
+      categoria.textContent = producto.categoria ? producto.categoria : '-';
+      fila.appendChild(nombre);
+      fila.appendChild(precio);
+      // fila.appendChild(cantidad);
+      fila.appendChild(categoria);
+      cuerpo.appendChild(fila);
+    });
+    productosTable.appendChild(cuerpo);
+
+    // Obtener el div donde se van a mostrar los productos
+    const productosDiv = document.querySelector('#productos');
+
+    // Limpiar el contenido anterior y mostrar la tabla de productos
+    productosDiv.innerHTML = '';
+    productosDiv.appendChild(productosTable);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// agregar producto
+$('#agregarProducto').submit(function(e){
+    e.preventDefault();
+    var nombreProducto = $('#nombreProducto').val();
+    // var cantidad = $('#cantidad').val();
+    var precio = $('#precio').val();
+    var categoria = $('#selectCategorias').val();
+    var nota = $('#nota').val();
+    var imagen = $('#imagen')[0].files[0]; // obtener el archivo de imagen seleccionado
+    var producto = {
+        _id: new Date().toISOString(),
+        nombre: nombreProducto,
+        // cantidad: cantidad,
+        precio: precio,
+        categoria: categoria,
+        nota: nota,
+        imagen: imagen ? URL.createObjectURL(imagen) : '' // convertir el archivo de imagen en una URL para guardar en la base de datos
+    };
+    db.put(producto, function callback(err, result) {
+        if (!err) {
+            console.log('Se agregó el producto: ' + nombreProducto);
+            $('#nombreProducto').val(''); // limpiar los campos del formulario
+            // $('#cantidad').val('');
+            $('#precio').val('');
+            $('#selectCategorias').val('');
+            $('#nota').val('');
+            $('#imagen').val('');
+            actualizarListaProductos(); // actualizar la lista de productos en la página
+        }
+    });
+});
+
+// actualizar lista de productos en la página
+function actualizarListaProductos() {
+    db.allDocs({include_docs: true, descending: true}, function(err, doc) {
+        if (!err) {
+            var productos = $('#productos');
+            productos.empty(); // vaciar lista anterior de productos
+            for (var i = 0; i < doc.rows.length; i++) {
+                var producto = doc.rows[i].doc;
+                var item = $('<div class="card mb-3"></div>');
+                var imagen = $('<img class="card-img-top">');
+                imagen.attr('src', producto.imagen); // mostrar la imagen guardada
+                var body = $('<div class="card-body"></div>');
+                var nombre = $('<h5 class="card-title">' + producto.nombre + '</h5>');
+                // var cantidad = $('<p class="card-text">Cantidad: ' + producto.cantidad + '</p>');
+                var precio = $('<p class="card-text">Precio: ' + producto.precio + '</p>');
+                var categoria = $('<p class="card-text">Categoría: ' + producto.categoria + '</p>');
+                var nota = $('<p class="card-text">Nota: ' + producto.nota + '</p>');
+                body.append(nombre, precio, categoria, nota);
+                item.append(imagen, body);
+                productos.append(item);
+            }
+        }
+    });
+}
+
+/////////////
+const input = document.getElementById('imagen');
+const previewImage = document.getElementById('imagen-preview');
+const imagenesDiv= document.getElementById('imags');
+
+input.addEventListener('change', () => {
+  const file = input.files[0];
+  const reader = new FileReader();
+
+  reader.addEventListener('load', () => {
+    previewImage.src = reader.result;
+    previewImage.width = "300";
+  });
+
+  reader.readAsDataURL(file);
+
+  input.addEventListener("change", () => {
+      const previewImage = document.createElement("img");
+      previewImage.src = reader.result;
+      previewImage.width = "200";
+      input.innerHTML = '';
+      input.appendChild(previewImage);
+     
+});
+
+});
+</script>
+
+<script src="js/app.js"></script>
+</body>
+</html>

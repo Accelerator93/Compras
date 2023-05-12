@@ -17,7 +17,7 @@ self.addEventListener('install', e => {
             'pages/AProductos.html',
             'js/funcion.js',
             'js/app.js',
-            'Manifest.json'           
+            'manifest.json'           
         ]);
 
     })

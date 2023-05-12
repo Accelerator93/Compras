@@ -7,17 +7,17 @@ self.addEventListener('install', e => {
 
     const cacheInstallEstatico = caches.open(cache_estatico).then(cache => {
         return cache.addAll([
-            
-            '/index.html',
+
+            'index.html',
             'pages/agregarLista.html',
-            '/css/style.css',
-            '/img/No_Image.jpg',
-            '/img/pa.jpg',
-            '/pages/Offline.html',
-            '/pages/AProductos.html',
-            '/js/funcion.js',
-            '/js/app.js',
-            '/Manifest.json'           
+            'css/style.css',
+            'img/No_Image.jpg',
+            'img/pa.jpg',
+            'pages/Offline.html',
+            'pages/AProductos.html',
+            'js/funcion.js',
+            'js/app.js',
+            'Manifest.json'           
         ]);
 
     })
